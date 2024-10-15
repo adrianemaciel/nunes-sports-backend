@@ -1,27 +1,39 @@
-const ProductModel = require("../models/productModel");
+const supabase = require("../supabaseClient");
 
-exports.getProducts = (req, res) => {
-  ProductModel.getAllProducts((err, products) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+const getProducts = async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("products").select("*");
+
+    if (error) {
+      throw error;
     }
-    res.json(products);
-  });
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-exports.createProduct = (req, res) => {
+const createProduct = async (req, res) => {
   const product = req.body;
-  ProductModel.createProduct(product, (err) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+
+  try {
+    const { error } = await supabase.from("products").insert([product]);
+
+    if (error) {
+      throw error;
     }
+
     res.status(201).json({ message: "Produto cadastrado com sucesso." });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-exports.updateProduct = (req, res) => {
+const updateProduct = async (req, res) => {
   const { id } = req.params;
   const product = req.body;
+
   if (
     !product.name ||
     !product.code ||
@@ -33,21 +45,41 @@ exports.updateProduct = (req, res) => {
       .json({ message: "Todos os campos devem ser preenchidos!" });
   }
 
-  ProductModel.updateProduct(id, product, (err) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+  try {
+    const { error } = await supabase
+      .from("products")
+      .update(product)
+      .eq("id", id);
+
+    if (error) {
+      throw error;
     }
+
     res.json({ message: "Produto atualizado com sucesso." });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-exports.deleteProduct = (req, res) => {
+const deleteProduct = async (req, res) => {
   const { id } = req.params;
 
-  ProductModel.deleteProduct(id, (err) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+  try {
+    const { error } = await supabase.from("products").delete().eq("id", id);
+
+    if (error) {
+      throw error;
     }
+
     res.json({ message: "Produto excluído com sucesso." });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = {
+  getProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
 };

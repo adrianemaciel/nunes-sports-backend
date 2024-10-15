@@ -21,7 +21,10 @@ app.use(express.json());
 app.use("/api", productRoutes);
 
 app.get("/", (req, res) => {
-  return res.json({ status: "OK" });
+  return res.json({
+    status: "OK",
+    message: "Conexão ao backend bem-sucedida!",
+  });
 });
 
 const port = process.env.PORT || 3000;

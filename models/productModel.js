@@ -1,44 +1,59 @@
-const db = require("../db");
+export async function getAllProducts(callback) {
+  try {
+    const { data, error } = await from("products").select("*");
 
-exports.getAllProducts = (callback) => {
-  const SQL = "SELECT * FROM products";
-  db.query(SQL, (err, results) => {
-    if (err) {
-      return callback(err);
+    if (error) {
+      return callback(error);
     }
-    callback(null, results);
-  });
-};
+    callback(null, data);
+  } catch (err) {
+    callback(err);
+  }
+}
 
-exports.createProduct = (product, callback) => {
+export async function createProduct(product, callback) {
   const { name, code, description, price } = product;
-  const SQL =
-    "INSERT INTO products (name, code, description, price) VALUES (?,?,?,?)";
-  db.query(SQL, [name, code, description, price], (err, result) => {
-    if (err) {
-      return callback(err);
-    }
-    callback(null, result);
-  });
-};
 
-exports.updateProduct = (id, product, callback) => {
+  try {
+    const { data, error } = await from("products").insert([
+      { name, code, description, price },
+    ]);
+
+    if (error) {
+      return callback(error);
+    }
+    callback(null, data);
+  } catch (err) {
+    callback(err);
+  }
+}
+
+export async function updateProduct(id, product, callback) {
   const { name, code, description, price } = product;
-  const SQL = `UPDATE products SET name=?, code=?, description=?, price=? WHERE id=?`;
-  db.query(SQL, [name, code, description, price, id], (err, result) => {
-    if (err) {
-      return callback(err);
-    }
-    callback(null, result);
-  });
-};
 
-exports.deleteProduct = (id, callback) => {
-  const SQL = `DELETE FROM products WHERE id = ?`;
-  db.query(SQL, [id], (err, result) => {
-    if (err) {
-      return callback(err);
+  try {
+    const { data, error } = await from("products")
+      .update({ name, code, description, price })
+      .eq("id", id);
+
+    if (error) {
+      return callback(error);
     }
-    callback(null, result);
-  });
-};
+    callback(null, data);
+  } catch (err) {
+    callback(err);
+  }
+}
+
+export async function deleteProduct(id, callback) {
+  try {
+    const { data, error } = await from("products").delete().eq("id", id);
+
+    if (error) {
+      return callback(error);
+    }
+    callback(null, data);
+  } catch (err) {
+    callback(err);
+  }
+}
