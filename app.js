@@ -6,10 +6,7 @@ const productRoutes = require("./routes/productRoutes");
 
 app.use(
   cors({
-    origin: [
-      "https://nunes-sports-store.netlify.app",
-      "https://nunes-sports-kappa.vercel.app",
-    ],
+    origin: ["https://nunes-sports-store.netlify.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -18,7 +15,7 @@ app.use(
 
 app.use(express.json());
 
-app.use("/api", productRoutes);
+app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => {
   return res.json({
